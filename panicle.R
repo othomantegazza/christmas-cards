@@ -11,7 +11,7 @@ good_panicle
 
 # plot panicle ------------------------------------------------------------
 
-point_size <- 2
+point_size <- 2.5
 
 p <- 
   good_panicle %>% 
@@ -33,18 +33,46 @@ p <-
     10, palette = "lajolla")[c(3,8,7,6,5)],
     guide = FALSE) +
   theme_void() +
-  theme(aspect.ratio = 1.2,
-        panel.background = element_rect(fill = "ivory1"),
-        panel.grid.major = element_line(colour = "grey40",
-                                        size = .2, linetype = "dotted"),
-        panel.grid.minor = element_line(colour = "grey60",
-                                        size = .1, linetype = "dotted"))
+  theme(aspect.ratio = 1.413793,
+        plot.background = element_rect(colour = "grey80", size = .1),
+        # panel.background = element_rect(fill = "ivory1"),
+        # panel.grid.major = element_line(colour = "grey40",
+        #                                 size = .2, linetype = "dotted"),
+        # panel.grid.minor = element_line(colour = "grey60",
+        #                                 size = .1, linetype = "dotted"),
+        plot.margin = margin(8, 4, 8, 4, unit = "mm"))
 
 p
-png("cards/panicle.png",
-    height = 1200,
-    width = 1200,
-    res = 300)
-p
+
+p_grob <- p %>% ggplotGrob()
+
+
+
+library(gridExtra)
+
+pdf("cards/panicle.pdf",
+    height = 11.7, 
+    width = 8.27,
+    paper = "a4")
+grid.arrange(grobs = list(p_grob, p_grob, p_grob, p_grob),
+             layout_matrix = matrix(1:4, ncol = 2))
 dev.off()
 
+library(cowplot)
+
+pdf("cards/panicle2.pdf",
+    height = 11.7, 
+    width = 8.27,
+    paper = "a4")
+cowplot::plot_grid(
+  plotlist = list(p_grob, p_grob, p_grob, p_grob),
+  nrow = 2
+)
+dev.off()
+# png("cards/panicle.png",
+#     height = 1200,
+#     width = 1200,
+#     res = 300)
+# p
+# dev.off()
+# 
