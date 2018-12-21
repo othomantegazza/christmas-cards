@@ -1,4 +1,5 @@
 library(tidyverse)
+library(gridExtra)
 load("~/Desktop/ird-5acc-paper/data/all-sep-deseq.Rdata")
 load("~/Desktop/ird-5acc-paper/data/rlog-pca.Rdata")
 
@@ -11,36 +12,60 @@ pc_spc <- pc_spc$x %>%
 
 to_plot <- pcro %>%
   select(PC5, locus_id) %>%
-  inner_join(pc_spc)
+  inner_join(pc_spc) %>% 
+  select(-locus_id)
+
+save(to_plot, file = "data/galaxy.Rdata")
+
+# Start from here ---------------------------------------------------------
+
+ratio <- 1.6
+scale_rt <- 1000
+ylims <- c(-15, 10)
+# xlims <- c(-.025, .02)
+xlims <- (ylims/scale_rt)*ratio
+wd <- xlims[2] - xlims[1]
+ht <- ylims[2] - ylims[1]
+# bins_ratio <- wd/ht
+bin_h <- .4
 
 p <- ggplot(to_plot,
             aes(x = PC5,
                 y = PC1)) + 
-  geom_hex(bins = 80) +
-  theme_void() +
-  # xlab("Var 1") +
-  # ylab("Var 2") +
-  # scale_fill_gradient(high = "#001a33",
-  #                     low = "#cce6ff",
-  #                     guide = FALSE)
+  geom_hex(
+    # bins = 80
+    binwidth = c((bin_h/scale_rt), bin_h)
+    ) +
   scale_fill_viridis_c(
-    # begin = 1, end = 0,
+    begin = .2, end = 1,
     option = "D",
     guide = FALSE,
-    trans = "log")
-
+    trans = "log") +
+  theme_void() +
+  lims(x = xlims,
+       y = ylims) +
+  coord_fixed(ratio = 1/scale_rt, expand = FALSE) +
+  theme(
+    # aspect.ratio = 1/1.6,
+    panel.background = element_rect(fill = "#440154FF"),
+    plot.background = element_rect(colour = "grey80", size = .1),
+    plot.margin = margin(t = 10, r = 8,
+                         b = 10, l = 8, unit = "mm"))
 p
 
-# pdf(file = "../fig/fig-PC5-rlog-PC1-stat.pdf")
-png(filename = "cards/galaxy.png",
-     height = 1200,
-     width = 1200,
-     res = 300)
+
+png(filename = "cards/galaxy-single.png",
+    width = 11.7/2, 
+    height = 8.27/2,
+    units = "in",
+    res = 300)
 p
 dev.off()
 
 pdf("cards/galaxy.pdf",
-    height = 12,
-    width = 12)
-p
+    width = 11.7, 
+    height = 8.27,
+    paper = "a4r")
+grid.arrange(grobs = list(p, p, p, p),
+             layout_matrix = matrix(1:4, ncol = 2))
 dev.off()
