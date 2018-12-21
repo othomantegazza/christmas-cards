@@ -36,11 +36,6 @@ p <- ggplot(to_plot,
     # bins = 80
     binwidth = c((bin_h/scale_rt), bin_h)
     ) +
-  scale_fill_viridis_c(
-    begin = .2, end = 1,
-    option = "D",
-    guide = FALSE,
-    trans = "log") +
   theme_void() +
   lims(x = xlims,
        y = ylims) +
@@ -51,7 +46,14 @@ p <- ggplot(to_plot,
     plot.background = element_rect(colour = "grey80", size = .1),
     plot.margin = margin(t = 10, r = 8,
                          b = 10, l = 8, unit = "mm"))
-p
+
+p_vir <- 
+  p +
+  scale_fill_viridis_c(
+    begin = .2, end = 1,
+    option = "D",
+    guide = FALSE,
+    trans = "log")
 
 
 png(filename = "cards/galaxy-single.png",
@@ -59,13 +61,35 @@ png(filename = "cards/galaxy-single.png",
     height = 8.27/2,
     units = "in",
     res = 300)
-p
+p_vir
 dev.off()
 
 pdf("cards/galaxy.pdf",
     width = 11.7, 
     height = 8.27,
     paper = "a4r")
-grid.arrange(grobs = list(p, p, p, p),
+grid.arrange(grobs = list(p_vir, p_vir, p_vir, p_vir),
+             layout_matrix = matrix(1:4, ncol = 2))
+dev.off()
+
+
+pdf("cards/galaxy-inf.pdf",
+    width = 11.7, 
+    height = 8.27,
+    paper = "a4r")
+p_inf <- 
+  p +
+  scale_fill_viridis_c(
+    begin = .2, end = 1,
+    option = "E",
+    # option = "D",
+    guide = FALSE,
+    trans = "log") + 
+  theme(
+    panel.background = element_rect(fill = "#FFFFFF"),
+    plot.background = element_rect(colour = "grey80", size = .1),
+    plot.margin = margin(t = 10, r = 8,
+                         b = 10, l = 8, unit = "mm"))
+grid.arrange(grobs = list(p_inf, p_inf, p_inf, p_inf),
              layout_matrix = matrix(1:4, ncol = 2))
 dev.off()
