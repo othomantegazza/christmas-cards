@@ -1,23 +1,6 @@
 library(tidyverse)
 library(gridExtra)
-load("~/Desktop/ird-5acc-paper/data/all-sep-deseq.Rdata")
-load("~/Desktop/ird-5acc-paper/data/rlog-pca.Rdata")
-
-
-pc_spc <- pc_spc$x %>%
-  as.data.frame() %>%
-  rownames_to_column() %>%
-  dplyr::rename(locus_id = "rowname") %>%
-  select(locus_id, PC1)
-
-to_plot <- pcro %>%
-  select(PC5, locus_id) %>%
-  inner_join(pc_spc) %>% 
-  select(-locus_id)
-
-save(to_plot, file = "data/galaxy.Rdata")
-
-# Start from here ---------------------------------------------------------
+load("data/galaxy.Rdata")
 
 ratio <- 1.6
 scale_rt <- 1000
@@ -92,4 +75,12 @@ p_inf <-
                          b = 10, l = 8, unit = "mm"))
 grid.arrange(grobs = list(p_inf, p_inf, p_inf, p_inf),
              layout_matrix = matrix(1:4, ncol = 2))
+dev.off()
+
+png(filename = "cards/galaxy-single-white.png",
+    width = 11.7/2, 
+    height = 8.27/2,
+    units = "in",
+    res = 300)
+p_inf
 dev.off()

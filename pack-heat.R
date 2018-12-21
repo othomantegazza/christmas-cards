@@ -2,6 +2,7 @@ library(tidyverse)
 library(magrittr)
 library(cranlogs)
 library(lubridate)
+library(gridExtra)
 
 
 # Set time span of one year to now ----------------------------------------
@@ -155,3 +156,18 @@ grid.arrange(grobs = list(p_inf, p_inf, p_inf, p_inf),
              layout_matrix = matrix(1:4, ncol = 2))
 dev.off()
 
+png(filename = "cards/pack-heat-single.png",
+    width = 11.7/2, 
+    height = 8.27/2,
+    units = "in",
+    res = 300)
+p_vir
+dev.off()
+
+png(filename = "cards/pack-heat-single-inf.png",
+    width = 11.7/2, 
+    height = 8.27/2,
+    units = "in",
+    res = 300)
+p_inf
+dev.off()
