@@ -134,3 +134,22 @@ grid.arrange(grobs = list(p_blue_grob, p_blue_grob,
                           p_blue_grob, p_blue_grob),
              layout_matrix = matrix(1:4, ncol = 2))
 dev.off()
+
+
+# Single plots ------------------------------------------------------------
+
+png("cards/panicle-single.png",
+    height = 11.7/2, 
+    width = 8.27/2,
+    units = "in",
+    res = 300)
+p
+dev.off()
+
+png("cards/panicle-single-blue.png",
+    height = 11.7/2, 
+    width = 8.27/2,
+    units = "in",
+    res = 300)
+p_blue
+dev.off()

@@ -28,7 +28,7 @@ if(!file.exists(dat_path)) {
   load(dat_path)
 }
 
-dat %>% View()
+# dat %>% View()
 
 # Tidy --------------------------------------------------------------------
 
@@ -54,8 +54,7 @@ dat_scaled <-
   mutate(scaled_count = count %>%
            log() %>%
            scales::rescale(from = range(.),
-                           to = c(0,1))) %T>%
-  View()
+                           to = c(0,1)))
 
 p <- dat_scaled %>% 
   ggplot(aes(x = date,
@@ -63,7 +62,8 @@ p <- dat_scaled %>%
              fill = scaled_count)) +
   geom_tile()
 
-p + scale_fill_viridis_c()
+p + 
+  scale_fill_viridis_c()
 
 png("cards/pack_heat.png",
     height = 2000,
@@ -71,11 +71,11 @@ png("cards/pack_heat.png",
     res = 300)
 p + 
   scale_fill_viridis_c(guide = FALSE) +
-  theme_void()
+  theme_void() 
 dev.off()
 
 
-# Subset ------------------------------------------------------------------
+# VIRIDIS plot ------------------------------------------------------------------
 
 set.seed(1)
 
@@ -84,49 +84,74 @@ pack_sub <-
   unique() %>%
   sample(100)
 
-p_subset <- 
+plot_heat <- function(dat_subset) {
+  p_heat <- 
+    dat_subset %>% 
+    ggplot(aes(x = date,
+               y = package,
+               fill = scaled_count)) +
+    geom_raster() +
+    # scale_fill_viridis_c(guide = FALSE) +
+    theme_void() +
+    theme(aspect.ratio = 1/1.6,
+          plot.background = element_rect(colour = "grey80", size = .1),
+          plot.margin = margin(t = 10, r = 8,
+                               b = 10, l = 8, unit = "mm"))
+
+  return(p_heat)  
+}
+
+
+p_heat <- 
   dat_scaled %>%
   filter(package %in% pack_sub) %>% 
-  ggplot(aes(x = date,
-             y = package,
-             fill = scaled_count)) +
-  geom_tile()
+  plot_heat()
 
-p_subset + scale_fill_viridis_c()
-
-
-png("cards/pack-heat-subset.png",
-    height = 1000,
-    width = 1200,
-    res = 300)
-p_subset + 
-  scale_fill_viridis_c(guide = FALSE) +
-  theme_void()
+p_vir <- 
+  p_heat + 
+  scale_fill_viridis_c(guide = FALSE)
+  
+pdf("cards/pack-heat-viridis.pdf",
+    width = 11.7, 
+    height = 8.27,
+    paper = "a4r")
+grid.arrange(grobs = list(p_vir, p_vir, p_vir, p_vir),
+             layout_matrix = matrix(1:4, ncol = 2))
 dev.off()
+
+# INFERNO plot ------------------------------------------------------------
+
 
 
 set.seed(25)
-pack_sub <- 
+pack_sub_2 <- 
   dat_scaled$package %>% 
   unique() %>%
   sample(100)
 
-p_subset <- 
+p_heat_2 <- 
   dat_scaled %>%
-  filter(package %in% pack_sub) %>% 
-  ggplot(aes(x = date,
-             y = package,
-             fill = scaled_count)) +
-  geom_tile()
+  filter(package %in% pack_sub_2) %>% 
+  plot_heat()
 
+p_inf <- 
+  p_heat_2 +
+  scale_fill_viridis_c(option = "B", 
+                       guide = FALSE) 
+  
 
 png("cards/pack-heat-subset-inferno.png",
     height = 1000,
     width = 1200,
     res = 300)
-p_subset + 
-  scale_fill_viridis_c(option = "B", 
-                       guide = FALSE) +
-  theme_void()
+p_inf
+dev.off()
+
+pdf("cards/pack-heat-inferno.pdf",
+    width = 11.7, 
+    height = 8.27,
+    paper = "a4r")
+grid.arrange(grobs = list(p_inf, p_inf, p_inf, p_inf),
+             layout_matrix = matrix(1:4, ncol = 2))
 dev.off()
 
